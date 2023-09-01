@@ -59,78 +59,54 @@ class SudokuSolver {
   checkRegionPlacement(puzzleString, row, column, value) {
   }
 
-  // validates if given string follows sudoku RULE that numbers can't repeat in same row, column or sector/square
-  checkSolutionValidity(puzzleString) {
-    if (
-      isUnique(puzzleString, this.chars[1]) &&
-      isUnique(puzzleString, this.chars[2]) &&
-      isUnique(puzzleString, this.chars[3])
-    ) {
-      return true;
-    } else {
-      return false;
-    }
-  }
 
-  // solves sudoku puzzleString
+// solves sudoku puzzleString
   solve(puzzleString) {
-    // this functions fills empty cells where there is only one possible number due to row, column and sector constraint (SUDOKU RULE)
     let impliedString  = fillImplications(puzzleString, this.chars);
-    // checks if puzzlestring still contains empty cells 
     if (impliedString.includes(".")) {
-      // checks if empty cells still have options/numbers left that can be filled in without violating SUDOKU RULE
-      // if there is no option/number left to fill in because it will cause repetion then that means puzzleString is not valid.
       if (failCheck(impliedString, this.chars)) {
         return "Invalid sudoku puzzle string."
       } else {
-        // when puzzlestring is valid but requires guessing and backtracking then fillguess method is used.
-        let outcomes = fillGuess(impliedString, this.chars, []);
-        let solutions = [];
-        // outcomes returned by fillGuess method are fully completed strings but some outcomes are NOT valid SUDOKU solutions
-        // loop below checks if SUDOKU RULE of non-repition is followed by string and then adds the string to solution array
-        for (let each of outcomes) {
-          if (this.checkSolutionValidity(each)) {
-            solutions.push(each);
-          }
-        }
-        return solutions;
+        return fillGuess(impliedString, this.chars, []);
       }
-    // returns implied string when there is only one solution
     } else {
       return impliedString;
     }
   }
 }
 
+// this function take a guess for empty cell and then calculated implied position before taking another guess or backtacking or finding a solution
 function fillGuess(string, chars, outcomes) {
-  // stores the string in an array
   let strArr = [...string];
-  // returns which strArr index to change for guessing and array of numbers that can be used for guess
   let [index, options] = takeGuess(string, chars);
-  // for loop to go through each number available for guess
   for (let each of options) {
-    // replace the empty cell with guess
     strArr[index] = each;
-    // run fillImplications to fill all cells where there is now only one possible option due to SUDOKU rule.
-    // returns the string with filles initial guess and all further implications that resulted from the initial guess
     let returnString = fillImplications(strArr.join(""), chars);
-    // if returnString still includes empty cell
     if (returnString.includes(".")) {
-      // if returnedString is such that there are empty cells which have no available option to be filled due to repetion then
-      // inital guess is backtracked by simply doing nothing and then for loop puts in next guess
       if (failCheck(returnString, chars)) {
       } else {
-        // if there are empty cells in returnString and still each empty cell has options, we take another guess and
-        // pass the outcomes collected so far
         fillGuess(returnString, chars, outcomes);
       }
-    // if there are no empty cells in returnString it is added to possible solutions array named outcomes
     } else {
-      outcomes.push(returnString);
+      if (checkSolutionValidity(returnString, chars)) {
+        outcomes.push(returnString);
+      }
     }
   }
-  // outcomes array is returned
   return outcomes;
+}
+
+// validates if given string follows sudoku RULE that numbers can't repeat in same row, column or sector/square
+function checkSolutionValidity(puzzleString, chars) {
+  if (
+    isUnique(puzzleString, chars[1]) &&
+    isUnique(puzzleString, chars[2]) &&
+    isUnique(puzzleString, chars[3])
+  ) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 // this function selects the input string index that would require minimum number of guesses to get it right
