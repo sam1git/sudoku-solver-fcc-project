@@ -42,11 +42,7 @@ class SudokuSolver {
 
   // validates if puzzleString is of the correct length corresponding to rank of sudoku game
   validate(puzzleString) {
-    if (puzzleString.length !== (this.rank**4)) {
-      return false;
-    } else {
-      return true
-    }
+    return puzzleString.length === (this.chars[0]**4);
   }
 
   // pending (not in use)
@@ -60,7 +56,7 @@ class SudokuSolver {
   }
 
 
-// solves sudoku puzzleString
+  // solves sudoku puzzleString
   solve(puzzleString) {
     let impliedString  = fillImplications(puzzleString, this.chars);
     if (impliedString.includes(".")) {
@@ -282,4 +278,3 @@ function sectorIndices(n) {
 }
 
 module.exports = SudokuSolver;
-
