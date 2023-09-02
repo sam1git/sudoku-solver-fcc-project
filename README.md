@@ -1,3 +1,4 @@
 # Sudoku Solver
 
-This is the Sudoku Solver project.
+This is the Sudoku Solver FCC project.
+Brute Force recursive backtracking.
