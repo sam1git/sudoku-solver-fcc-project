@@ -22,18 +22,20 @@ class SudokuSolver {
         
   >> Given below are puzzlestring indices that correspond to soduko of rank 3.
   >> Example: if puzzlestring starts with ...5 that would mean number 5 sits at index position 3 in the soduko grid below.
-  
-         0, 1, 2,   3, 4, 5,    6, 7, 8,
-         9,10,11,  12,13,14,   15,16,17,
-        18,19,20,  21,22,23,   24,25,26,
+        ----------------------------------
+          1  2  3    4  5  6     7  8  9
+        __________________________________
+      A   0, 1, 2,   3, 4, 5,    6, 7, 8,
+      B   9,10,11,  12,13,14,   15,16,17,
+      C  18,19,20,  21,22,23,   24,25,26,
         
-        27,28,29,  30,31,32    33,34,35,
-        36,37,38,  39,40,41    42,43,44,
-        45,46,47,  48,49,50    51,52,53,
+      D  27,28,29,  30,31,32    33,34,35,
+      E  36,37,38,  39,40,41    42,43,44,
+      F  45,46,47,  48,49,50    51,52,53,
         
-        54,55,56,  57,58,59,   60,61,62,
-        63,64,65,  66,67,68,   69,70,71,
-        72,73,74,  75,76,77,   78,79,80
+      G  54,55,56,  57,58,59,   60,61,62,
+      H  63,64,65,  66,67,68,   69,70,71,
+      I  72,73,74,  75,76,77,   78,79,80
   **********************************************************/
   constructor(n) {
     // chars = [rank, rows, cols, sectors]
@@ -42,19 +44,33 @@ class SudokuSolver {
 
   // validates if puzzleString is of the correct length corresponding to rank of sudoku game
   validate(puzzleString) {
-    return puzzleString.length === (this.chars[0]**4);
+    if (puzzleString === "" || puzzleString === undefined) {
+      return {"error": "Required field missing"}
+    }
+    if (!(puzzleString.length === (this.chars[0]**4))) {
+      return {"error": "Expected puzzle to be 81 characters long"};
+    }
+    if (!/^[.\d]+$/.test(puzzleString)) {
+      return {"error": "Invalid characters in puzzle"};
+    }
+    if (!checkSolutionValidity(puzzleString, this.chars)) {
+      return {"error": "Puzzle cannot be solved"};
+    }
+    return true;
   }
 
   // pending (not in use)
-  checkRowPlacement(puzzleString, row, column, value) {
+  checkRowPlacement(puzzleString) {
+    return isUnique(puzzleString, this.chars[1]);
   }
   // pending (not in use)
-  checkColPlacement(puzzleString, row, column, value) {
+  checkColPlacement(puzzleString) {
+    return isUnique(puzzleString, this.chars[2]);
   }
   // pending (not in use)
-  checkRegionPlacement(puzzleString, row, column, value) {
+  checkRegionPlacement(puzzleString) {
+    return isUnique(puzzleString, this.chars[3]);
   }
-
 
   // solves sudoku puzzleString
   solve(puzzleString) {
